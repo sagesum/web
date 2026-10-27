@@ -1,0 +1,137 @@
+/* 博客列表页
+ *
+ * 当前 JSX 没有 className，所以用 #root 的直接子元素选择器定位。
+ * Header 里的 ul 被包在 .header 内部，Resume 页的 ul 在 .resume-page 里，
+ * 都不会命中这里。
+ */
+
+#root > ul {
+    /* #root 是 flex column 且 text-align: center，先把这两点掰回来 */
+    flex: 1;
+    box-sizing: border-box;
+    width: 100%;
+    text-align: left;
+
+    margin: 0;
+    padding: 52px var(--gutter);
+    list-style: none;
+
+    display: grid;
+    grid-template-columns: 1fr; /* 一行一个，铺满整行 */
+    gap: 14px;
+    align-content: start;
+}
+
+#root > ul > li {
+    margin: 0;
+    min-width: 0;
+}
+
+/* 整张卡片就是 <a>，块级化 + 撑满，点哪里都算命中 */
+#root > ul > li > a {
+    display: block;
+    box-sizing: border-box;
+    height: 100%;
+    padding: 22px 26px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--card-bg);
+    box-shadow: var(--shadow-sm);
+    color: var(--text-h);
+    text-decoration: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+#root > ul > li > a:hover {
+    border-color: var(--brand);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+#root > ul > li > a:focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+}
+
+#root > ul > li > a > h4 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--text-h);
+
+    /* 单行列表：标题超长用省略号收尾，保证每行高度一致 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 768px) {
+    #root > ul {
+        padding: 28px var(--gutter);
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    #root > ul > li > a {
+        padding: 16px 18px;
+    }
+
+    #root > ul > li > a > h4 {
+        font-size: 16px;
+    }
+}
+
+/* ---- 无限滚动 ---- */
+
+/* 触底哨兵：进入视口的瞬间触发下一页加载。
+ * 高度不能是 0：0 高度的元素在部分浏览器里命中判定不稳定，
+ * 给 1px 既不可见，又能保证 IntersectionObserver 稳定触发。
+ * 放在 </ul> 之后，不是 ul 的子元素，所以上面那些 #root > ul 选择器不受影响。 */
+.blog-sentinel {
+    flex: 0 0 auto;
+    width: 100%;
+    height: 1px;
+}
+
+/* 加载中 / 没有更多 / 错误：三种状态共用一套排版 */
+.blog-hint {
+    margin: 0 0 40px;
+    padding: 0 var(--gutter);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text);
+    text-align: center; /* #root 已是 center，这里显式写一遍，免得将来加 flex 布局被改掉 */
+}
+
+/* 加载态：加个呼吸动画，让人知道不是卡死了 */
+.blog-hint.loading {
+    color: var(--text-h);
+    animation: blog-hint-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes blog-hint-pulse {
+    0%,
+    100% {
+        opacity: 0.45;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* 错误态 */
+.blog-error {
+    color: #dc2626;
+}
+
+@media (prefers-color-scheme: dark) {
+    .blog-error {
+        color: #f87171; /* 暗色背景下 #dc2626 对比度不够 */
+    }
+}

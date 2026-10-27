@@ -1,0 +1,115 @@
+/* 写文章页
+ *
+ * 这个页面用的是 className（不是位置选择器），
+ * 因为它是新建的，加上 class 不会影响别的页面：
+ * #root 下直接子元素只有 .editor 的 <form>，跟 blog 页的 <ul> 不冲突。
+ */
+
+.editor {
+    /* #root 是 flex column，这一条让表单把中间剩余高度吃掉，页脚才会始终在底部 */
+    flex: 1;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 40px var(--gutter) 60px;
+
+    /* #root 是 text-align: center，输入区必须掰回左对齐 */
+    text-align: left;
+}
+
+/* 标题框和正文框共用一套外观，避免两边字体/边框不一致 */
+.editor-title,
+.editor-content {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 12px 14px;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card-bg);
+    color: var(--text-h);
+
+    /* input / textarea 默认不继承父元素字体，不写这句会变成宋体，跟全站格格不入 */
+    font-family: inherit;
+}
+
+.editor-title {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.editor-content {
+    /* 和 .editor 一起把剩余高度撑开，窗口变高时文本框跟着变高 */
+    flex: 1;
+    min-height: 320px;
+
+    font-size: 15px;
+    line-height: 1.75;
+
+    /* 只允许纵向拉伸：横向拉会撑破 max-width，把布局搞乱 */
+    resize: vertical;
+}
+
+/* 占位文字压低存在感，别和真实输入内容混淆 */
+.editor-title::placeholder,
+.editor-content::placeholder {
+    color: var(--text);
+    opacity: 0.45;
+}
+
+/* 聚焦时边框换成品牌色，弱化原有的浏览器默认描边（全局 :focus-visible 已给键盘焦点环） */
+.editor-title:focus,
+.editor-content:focus {
+    border-color: var(--brand);
+    outline: none;
+}
+
+.editor button {
+    align-self: flex-end; /* 按钮靠右，表单是 column flex，这条只影响横向 */
+    padding: 10px 22px;
+
+    border: none;
+    border-radius: 999px;
+    background: var(--brand);
+    color: #fff;
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.editor button:hover:not(:disabled) {
+    background: var(--brand-strong);
+    transform: translateY(-1px);
+}
+
+/* 标题或正文为空时 disabled，视觉上要明显"现在点不动" */
+.editor button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+}
+
+@media (max-width: 768px) {
+    .editor {
+        padding: 24px var(--gutter) 40px;
+    }
+
+    .editor-title {
+        font-size: 18px;
+    }
+
+    .editor-content {
+        min-height: 240px;
+    }
+}

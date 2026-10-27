@@ -1,0 +1,113 @@
+/* 文章详情页
+ *
+ * 同样没有 className，用 #root 的直接子元素定位。
+ * 详情页只有 <h2> 和 <p> 两个顶层元素；Home 的 h2 包在 div 里，不会被误伤。
+ */
+
+#root > h2,
+#root > p {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 760px;
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+    text-align: left; /* #root 全局 center，正文必须掰回左对齐 */
+}
+
+#root > h2 {
+    margin-block: 56px 20px;
+    font-size: 32px;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    color: var(--text-h);
+}
+
+#root > p {
+    margin-block: 0 72px;
+    color: var(--text);
+    font-size: 17px;
+    line-height: 1.9;
+
+    /* 关键：正文用 \n 分段，普通 <p> 会把换行压成空格，
+       pre-wrap 才能让 \n 真正换行，同时长行仍然自动折行 */
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}
+
+/* 删除按钮
+ *
+ * 直接让 <button> 当 #root 的子元素，不包 div：
+ * home.css 里的 `#root > div:not(.resume-page)` 会把任何顶层 div 当成首页容器
+ * （padding: 90px + flex:1 + 垂直居中），只要包一层，详情页布局立刻崩。
+ */
+#root > button.post-delete {
+    box-sizing: border-box;
+    align-self: center;
+
+    /* 正文 p 自带 72px 下边距，这里往上拉 40px，实际视觉间距是 32px */
+    margin-block: -40px 32px;
+    padding: 9px 22px;
+
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: transparent;
+    color: #dc2626;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+}
+
+#root > button.post-delete:hover:not(:disabled) {
+    border-color: #dc2626;
+    background: rgba(220, 38, 38, 0.08);
+}
+
+#root > button.post-delete:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* 删除失败提示
+ * 必须写成 #root > p.post-error：上面的 `#root > p` 是正文样式（17px / 行高 1.9 / 72px 下边距），
+ * 加上这个类才有更高特异性把它盖掉。
+ */
+#root > p.post-error {
+    margin-block: 0 72px;
+    font-size: 14px;
+    line-height: 1.6;
+    text-align: center;
+    color: #dc2626;
+}
+
+@media (max-width: 768px) {
+    #root > h2 {
+        margin-block: 32px 14px;
+        font-size: 24px;
+    }
+
+    #root > p {
+        margin-block: 0 48px;
+        font-size: 16px;
+        line-height: 1.8;
+    }
+
+    #root > button.post-delete {
+        margin-block: -28px 24px;   /* 移动端正文下边距只有 48px，跟着收 */
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    /* 暗色背景上 #dc2626 对比度不够，换成更亮的红 */
+    #root > button.post-delete {
+        color: #f87171;
+    }
+
+    #root > button.post-delete:hover:not(:disabled) {
+        border-color: #f87171;
+        background: rgba(248, 113, 113, 0.1);
+    }
+
+    #root > p.post-error {
+        color: #f87171;
+    }
+}

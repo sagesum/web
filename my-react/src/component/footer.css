@@ -1,0 +1,27 @@
+/* 页脚
+ *
+ * <footer> 没有 className，但它正好是 #root 的直接子元素，
+ * 用 #root > footer 定位即可，不需要改 JSX。
+ */
+
+#root > footer {
+    /* #root 是 flex column + min-height:100svh，这条把页脚顶到视口底部，
+       内容不够高时也不会飘在中间 */
+    margin-top: auto;
+
+    padding: 22px var(--gutter);
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+
+    color: var(--text);
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    #root > footer {
+        padding: 18px var(--gutter);
+        font-size: 13px;
+    }
+}
